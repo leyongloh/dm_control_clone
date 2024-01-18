@@ -22,7 +22,6 @@ from dm_control.locomotion.soccer import observables as observables_lib
 from dm_control.locomotion.soccer import soccer_ball
 from dm_env import specs
 import numpy as np
-import pdb
 
 _THROW_IN_BALL_Z = 0.5
 
@@ -80,7 +79,6 @@ class Task(composer.Task):
       tracking_cameras: a sequence of `camera.MultiplayerTrackingCamera`
         instances to track the players and ball.
     """
-    pdb.set_trace()
     self.arena = arena
     self.players = players
 
@@ -120,7 +118,6 @@ class Task(composer.Task):
   def _throw_in(self, physics, random_state, ball):
     x, y, _ = physics.bind(ball.geom).xpos
     shrink_x, shrink_y = random_state.uniform([0.7, 0.7], [0.9, 0.9])
-    pdb.set_trace()
     # ball.set_pose(physics, [x * shrink_x, y * shrink_y, _THROW_IN_BALL_Z])
     ball.set_pose(physics, [0, 0, 0])
     ball.set_velocity(

@@ -17,7 +17,7 @@
 
 import abc
 import numpy as np
-
+import pdb
 
 class WalkerInitializer(metaclass=abc.ABCMeta):
   """The abstract base class for a walker initializer."""

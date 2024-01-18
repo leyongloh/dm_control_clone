@@ -23,6 +23,7 @@ from dm_control.locomotion.walkers import base
 from dm_control.locomotion.walkers import initializers
 from dm_control.mujoco.wrapper.mjbindings import mjlib
 import numpy as np
+import pdb
 
 _RANGEFINDER_SCALE = 10.0
 _TOUCH_THRESHOLD = 1e-3
@@ -216,6 +217,7 @@ class WalkerObservables(base.WalkerObservables):
 
   @composer.observable
   def body_height(self):
+    
     return observable.MJCFFeature('xpos', self._entity.root_body)[2]
 
   @composer.observable
@@ -223,6 +225,10 @@ class WalkerObservables(base.WalkerObservables):
     """Position of end effectors relative to torso, in the egocentric frame."""
     self._entity.end_effectors_pos_sensors[:] = []
     for effector in self._entity.end_effectors:
+    ##################
+      # if not effector:
+      #   continue
+    ##################
       objtype = effector.tag
       if objtype == 'body':
         objtype = 'xbody'

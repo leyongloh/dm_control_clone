@@ -21,6 +21,7 @@ from dm_control import composer
 from dm_control.locomotion import walkers
 from dm_control.locomotion.soccer.boxhead import BoxHead
 from dm_control.locomotion.soccer.humanoid import Humanoid
+from dm_control.locomotion.soccer.nao import NAO
 from dm_control.locomotion.soccer.initializers import Initializer
 from dm_control.locomotion.soccer.initializers import UniformInitializer
 from dm_control.locomotion.soccer.observables import CoreObservablesAdder
@@ -40,18 +41,21 @@ from dm_control.locomotion.soccer.team import Player
 from dm_control.locomotion.soccer.team import RGBA_BLUE
 from dm_control.locomotion.soccer.team import RGBA_RED
 from dm_control.locomotion.soccer.team import Team
-from dm_control.locomotion.walkers.initializers import mocap
+from dm_control.locomotion.walkers.initializers import mocap, NoOpInitializer, nao_initializer
 import numpy as np
+import pdb
 
 
 class WalkerType(enum.Enum):
   BOXHEAD = 0
   ANT = 1
   HUMANOID = 2
+  NAO = 3
 
 
 def _make_walker(name, walker_id, marker_rgba, walker_type=WalkerType.BOXHEAD):
   """Construct a BoxHead walker."""
+  # pdb.set_trace()
   if walker_type == WalkerType.BOXHEAD:
     return BoxHead(
         name=name,
@@ -68,6 +72,16 @@ def _make_walker(name, walker_id, marker_rgba, walker_type=WalkerType.BOXHEAD):
         walker_id=walker_id,
         visual=Humanoid.Visual.JERSEY,
         initializer=initializer)
+  if walker_type == WalkerType.NAO:
+    # initializer = NoOpInitializer()
+    initializer = nao_initializer.NAOInitializer()
+    # initializer = mocap.CMUMocapInitializer()
+    return NAO(
+        name=name,
+        marker_rgba=marker_rgba,
+        walker_id=walker_id,
+        visual=NAO.Visual.JERSEY,
+        initializer=initializer)
   raise ValueError("Unrecognized walker type: %s" % walker_type)
 
 
@@ -81,7 +95,8 @@ def _make_players(team_size, walker_type):
 
     away_walker = _make_walker("away%d" % i, i, RGBA_RED, walker_type)
     away_players.append(Player(Team.AWAY, away_walker))
-  return home_players + away_players
+  return home_players
+# return home_players + away_players
 
 
 def _area_to_size(area, aspect_ratio=0.75):
@@ -109,7 +124,8 @@ def load(team_size,
     enable_field_box: (optional) if `True`, enable physical bounding box for
       the soccer ball (but not the players).
     keep_aspect_ratio: (optional) if `True`, maintain constant pitch aspect
-class WalkerType(enum.Enum):
+      ratio.
+    terminate_on_goal: (optional) if `False`, continuous game play across
       scoring events.
     walker_type: the type of walker to instantiate in the environment.
 
@@ -130,7 +146,13 @@ class WalkerType(enum.Enum):
     num_walkers = team_size * 2
     min_size = _area_to_size(MINI_FOOTBALL_MIN_AREA_PER_HUMANOID * num_walkers)
     max_size = _area_to_size(MINI_FOOTBALL_MAX_AREA_PER_HUMANOID * num_walkers)
-    # ball = regulation_soccer_ball()
+    ball = regulation_soccer_ball()
+
+  if walker_type == WalkerType.NAO:
+    goal_size = MINI_FOOTBALL_GOAL_SIZE
+    num_walkers = team_size * 2
+    min_size = _area_to_size(MINI_FOOTBALL_MIN_AREA_PER_HUMANOID * num_walkers)
+    max_size = _area_to_size(MINI_FOOTBALL_MAX_AREA_PER_HUMANOID * num_walkers)
     ball = SoccerBall(radius=0.03, mass=0.020)
 
   task_factory = Task
@@ -140,6 +162,7 @@ class WalkerType(enum.Enum):
   return composer.Environment(
       task=task_factory(
           players=_make_players(team_size, walker_type),
+          # players=[_make_walker(name='home0', walker_id=0 ,marker_rgba=[0.1, 0.1, 0.8, 1.0], walker_type=walker_type)],
           arena=Pitch(
               size=(2,3),
               field_box=enable_field_box,
