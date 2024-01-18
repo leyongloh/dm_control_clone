@@ -55,7 +55,8 @@ class UniformInitializer(Initializer):
     else:
       raise ValueError(
           'Unsupported spawn_range. Must be ndarray or list/tuple of length 2.')
-    ball.set_pose(physics, [x, y, self._init_ball_z])
+    # ball.set_pose(physics, [x, y, self._init_ball_z])
+    ball.set_pose(physics, [0, 0, 0])
     # Note: this method is not always called immediately after `physics.reset()`
     #       so we need to explicitly zero out the velocity.
     ball.set_velocity(physics, velocity=0., angular_velocity=0.)

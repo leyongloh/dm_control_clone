@@ -51,8 +51,8 @@ class SoccerBall(props.Primitive):
   """A soccer ball that keeps track of entities that come into contact."""
 
   def _build(self,
-             radius=0.35,
-             mass=0.045,
+             radius=0.03,
+             mass=0.020,
              friction=(0.7, 0.075, 0.075),
              damp_ratio=1.0,
              name='soccer_ball'):

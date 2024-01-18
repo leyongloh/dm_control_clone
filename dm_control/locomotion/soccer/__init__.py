@@ -109,8 +109,7 @@ def load(team_size,
     enable_field_box: (optional) if `True`, enable physical bounding box for
       the soccer ball (but not the players).
     keep_aspect_ratio: (optional) if `True`, maintain constant pitch aspect
-      ratio.
-    terminate_on_goal: (optional) if `False`, continuous game play across
+class WalkerType(enum.Enum):
       scoring events.
     walker_type: the type of walker to instantiate in the environment.
 
@@ -124,14 +123,15 @@ def load(team_size,
   goal_size = None
   min_size = (32, 24)
   max_size = (48, 36)
-  ball = SoccerBall()
+  ball = SoccerBall(radius=0.03, mass=0.020)
 
   if walker_type == WalkerType.HUMANOID:
     goal_size = MINI_FOOTBALL_GOAL_SIZE
     num_walkers = team_size * 2
     min_size = _area_to_size(MINI_FOOTBALL_MIN_AREA_PER_HUMANOID * num_walkers)
     max_size = _area_to_size(MINI_FOOTBALL_MAX_AREA_PER_HUMANOID * num_walkers)
-    ball = regulation_soccer_ball()
+    # ball = regulation_soccer_ball()
+    ball = SoccerBall(radius=0.03, mass=0.020)
 
   task_factory = Task
   if not terminate_on_goal:
@@ -140,12 +140,10 @@ def load(team_size,
   return composer.Environment(
       task=task_factory(
           players=_make_players(team_size, walker_type),
-          arena=RandomizedPitch(
-              min_size=min_size,
-              max_size=max_size,
-              keep_aspect_ratio=keep_aspect_ratio,
+          arena=Pitch(
+              size=(2,3),
               field_box=enable_field_box,
-              goal_size=goal_size),
+              goal_size=(0.29, 0.68, 0.51)),
           ball=ball,
           disable_walker_contacts=disable_walker_contacts),
       time_limit=time_limit,
