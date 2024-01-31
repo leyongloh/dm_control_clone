@@ -139,7 +139,7 @@ def load(team_size,
   goal_size = None
   min_size = (32, 24)
   max_size = (48, 36)
-  ball = SoccerBall(radius=0.03, mass=0.020)
+  ball = SoccerBall(radius=0.03, mass=0.020, friction=(0.1,0.1,0.0))
 
   if walker_type == WalkerType.HUMANOID:
     goal_size = MINI_FOOTBALL_GOAL_SIZE
@@ -153,7 +153,7 @@ def load(team_size,
     num_walkers = team_size * 2
     min_size = _area_to_size(MINI_FOOTBALL_MIN_AREA_PER_HUMANOID * num_walkers)
     max_size = _area_to_size(MINI_FOOTBALL_MAX_AREA_PER_HUMANOID * num_walkers)
-    ball = SoccerBall(radius=0.03, mass=0.020)
+    ball = SoccerBall(radius=0.03, mass=0.020, friction=(0.1,0.1,0.0))
 
   task_factory = Task
   if not terminate_on_goal:

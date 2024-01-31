@@ -66,10 +66,15 @@ class UniformInitializer(Initializer):
     walker.reinitialize_pose(physics, random_state)
     x, y = random_state.uniform(-spawn_range, spawn_range)
     (_, _, z), quat = walker.get_pose(physics)
-    walker.set_pose(physics, [x, y, z], quat)
-    rotation = random_state.uniform(-np.pi, np.pi)
-    quat = [np.cos(rotation / 2), 0, 0, np.sin(rotation / 2)]
-    walker.shift_pose(physics, quaternion=quat)
+    # walker.set_pose(physics, [x, y, z], quat)
+
+    quat = [ 1, 0, 0, 0.0000013 ]
+
+    # walker.set_pose(physics, [-0.10, -0.05, -0.10], quat) # Balancing Pose
+    walker.set_pose(physics, [-0.15, -0.05, 0.01], quat) # Standing Pose
+    # rotation = random_state.uniform(-np.pi, np.pi)
+    # quat = [np.cos(rotation / 2), 0, 0, np.sin(rotation / 2)]
+    # walker.shift_pose(physics, quaternion=quat)
     # Note: this method is not always called immediately after `physics.reset()`
     #       so we need to explicitly zero out the velocity.
     walker.set_velocity(physics, velocity=0., angular_velocity=0.)
