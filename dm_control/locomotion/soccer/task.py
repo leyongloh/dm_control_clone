@@ -22,6 +22,7 @@ from dm_control.locomotion.soccer import observables as observables_lib
 from dm_control.locomotion.soccer import soccer_ball
 from dm_env import specs
 import numpy as np
+import pdb
 
 _THROW_IN_BALL_Z = 0.5
 
@@ -111,8 +112,9 @@ class Task(composer.Task):
   def observables(self):
     observables = []
     for player in self.players:
-      observables.append(
-          player.walker.observables.as_dict(fully_qualified=False))
+      # observables.append(
+      #     player.walker.observables.as_dict(fully_qualified=False))
+      observables = player.walker.observables.as_dict(fully_qualified=False)
     return observables
 
   def _throw_in(self, physics, random_state, ball):
@@ -178,22 +180,45 @@ class Task(composer.Task):
       A list of 0-dimensional numpy arrays, one per player.
     """
     scoring_team = self.arena.detected_goal()
+    
+    
+    ###### distance of goal to ball ######
+    goal_x = ((self.arena._away_goal._goal_geoms[1].fromto + self.arena._away_goal._goal_geoms[0].fromto)/2)[0]
+    goal_y = ((self.arena._away_goal._goal_geoms[1].fromto + self.arena._away_goal._goal_geoms[0].fromto)/2)[1]
+    ball_x = self.ball.get_pose(physics)[0][0]
+    ball_y = self.ball.get_pose(physics)[0][1]
+    distance_ball_to_goal = np.sqrt((goal_x - ball_x) ** 2 + (goal_y - ball_y) **2)
+    
+    
+    ###### distance robot and ball #####
+    robot_x = self.players[0].walker.get_pose(physics)[0][0]
+    robot_y = self.players[0].walker.get_pose(physics)[0][1]
+    distance_robot_to_ball = np.sqrt((ball_x - robot_x) ** 2 + (ball_y - robot_y) **2)
+    
+    ##### check if robot fall #####
+    if self.players[0].walker.body_contacts(physics):
+      reward_robot_fall = -5
+    else:
+      reward_robot_fall = 0
+      
     if not scoring_team:
-      return [np.zeros((), dtype=np.float32) for _ in self.players]
+      return [np.zeros((), dtype=np.float32) for _ in self.players][0] - distance_ball_to_goal - distance_robot_to_ball + reward_robot_fall
 
     rewards = []
     for p in self.players:
       if p.team == scoring_team:
-        rewards.append(np.ones((), dtype=np.float32))
+        rewards.append(np.ones((), dtype=np.float32)*500)
       else:
-        rewards.append(-np.ones((), dtype=np.float32))
-    return rewards
+        rewards.append(-np.ones((), dtype=np.float32)*500)
+
+    print("Score reward:", rewards[0] - distance_ball_to_goal - distance_robot_to_ball)
+    return rewards[0] - distance_ball_to_goal - distance_robot_to_ball + reward_robot_fall
 
   def get_reward_spec(self):
     return [
         specs.Array(name="reward", shape=(), dtype=np.float32)
         for _ in self.players
-    ]
+    ][0]
 
   def get_discount(self, physics):
     if self.arena.detected_goal():
@@ -216,7 +241,8 @@ class Task(composer.Task):
 
   def action_spec(self, physics):
     """Return multi-agent action_spec."""
-    return [player.walker.action_spec for player in self.players]
+    # return [player.walker.action_spec for player in self.players]
+    return [player.walker.action_spec for player in self.players][0]
 
 
 class MultiturnTask(Task):
