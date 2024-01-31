@@ -30,205 +30,65 @@ import numpy as np
 import pdb
 
 _XML_PATH = os.path.join(os.path.dirname(__file__),
-                         'assets/nao.xml')
+                         'assets/nao_working.xml')
+
+# _XML_PATH = os.path.join(os.path.dirname(__file__),
+#                          'assets/nao.xml')
+
 _WALKER_GEOM_GROUP = 2
 _WALKER_INVIS_GROUP = 1
 
+
+
 # _CMU_MOCAP_JOINTS = (
-#     'lfemurrz', 'lfemurry', 'lfemurrx', 'ltibiarx', 'lfootrz', 'lfootrx',
-#     'ltoesrx', 'rfemurrz', 'rfemurry', 'rfemurrx', 'rtibiarx', 'rfootrz',
-#     'rfootrx', 'rtoesrx', 'lowerbackrz', 'lowerbackry', 'lowerbackrx',
-#     'upperbackrz', 'upperbackry', 'upperbackrx', 'thoraxrz', 'thoraxry',
-#     'thoraxrx', 'lowerneckrz', 'lowerneckry', 'lowerneckrx', 'upperneckrz',
-#     'upperneckry', 'upperneckrx', 'headrz', 'headry', 'headrx', 'lclaviclerz',
-#     'lclaviclery', 'lhumerusrz', 'lhumerusry', 'lhumerusrx', 'lradiusrx',
-#     'lwristry', 'lhandrz', 'lhandrx', 'lfingersrx', 'lthumbrz', 'lthumbrx',
-#     'rclaviclerz', 'rclaviclery', 'rhumerusrz', 'rhumerusry', 'rhumerusrx',
-#     'rradiusrx', 'rwristry', 'rhandrz', 'rhandrx', 'rfingersrx', 'rthumbrz',
-#     'rthumbrx')
+#     'HeadYaw', 'HeadPitch', 'LShoulderPitch', 'LShoulderRoll', 'LElbowYaw', 'LElbowRoll', 'LWristYaw',
+#   'LHand', 'LHipYawPitch', 'LHipRoll', 'LHipPitch', 'LKneePitch', 'LAnklePitch', 'LAnkleRoll', 'RHipYawPitch',
+#   'RHipRoll', 'RHipPitch', 'RKneePitch', 'RAnklePitch', 'RAnkleRoll', 'RShoulderPitch', 'RShoulderRoll',
+#   'RElbowYaw', 'RElbowRoll', 'RWristYaw', 'RHand')
 
 
 _CMU_MOCAP_JOINTS = (
-    'HeadYaw', 'HeadPitch', 'LShoulderPitch', 'LShoulderRoll', 'LElbowYaw', 'LElbowRoll', 'LWristYaw',
-  'LHand', 'LHipYawPitch', 'LHipRoll', 'LHipPitch', 'LKneePitch', 'LAnklePitch', 'LAnkleRoll', 'RHipYawPitch',
-  'RHipRoll', 'RHipPitch', 'RKneePitch', 'RAnklePitch', 'RAnkleRoll', 'RShoulderPitch', 'RShoulderRoll',
-  'RElbowYaw', 'RElbowRoll', 'RWristYaw', 'RHand')
+  'LHipRoll', 'LHipPitch', 'LKneePitch')
 
 # pylint: disable=bad-whitespace
 PositionActuatorParams = collections.namedtuple(
     'PositionActuatorParams', ['name', 'forcerange', 'kp'])
 _POSITION_ACTUATORS = [
-    PositionActuatorParams('HeadYaw',      [-0.1,   0.1 ], 0.5 ),
-    PositionActuatorParams('HeadPitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LShoulderPitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LShoulderRoll',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LElbowYaw',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LElbowRoll',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LWristYaw',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LHand',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LHipYawPitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LHipRoll',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LHipPitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LKneePitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LAnklePitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('LAnkleRoll',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RHipYawPitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RHipRoll',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RHipPitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RKneePitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RAnklePitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RAnkleRoll',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RShoulderPitch',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RShoulderRoll',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RElbowYaw',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RElbowRoll',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RWristYaw',      [-0.1,   0.1 ], 0.1 ),
-    PositionActuatorParams('RHand',      [-0.1,   0.1 ], 0.1 ),
-    
-    # PositionActuatorParams('HeadYaw',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('HeadPitch',      [-20,   20 ], 20 ),
+  
+
+    PositionActuatorParams('LHipRoll',      [-5,   5 ], 20 ),
+    PositionActuatorParams('LHipPitch',      [-20,   20 ], 80 ),
+    PositionActuatorParams('LKneePitch',      [-10,   10 ], 20 ),
+
+    # PositionActuatorParams('HeadYaw',      [-20,   20 ], 20),
+    # PositionActuatorParams('HeadPitch',      [-20,   20 ], 20),
     # PositionActuatorParams('LShoulderPitch',      [-20,   20 ], 20 ),
     # PositionActuatorParams('LShoulderRoll',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('LElbowYaw',      [-20,   20 ], 20 ),
+    # PositionActuatorParams('LElbowYaw',      [-20,   20 ], 20),
     # PositionActuatorParams('LElbowRoll',      [-20,   20 ], 20 ),
     # PositionActuatorParams('LWristYaw',      [-20,   20 ], 20 ),
     # PositionActuatorParams('LHand',      [-20,   20 ], 20 ),
     # PositionActuatorParams('LHipYawPitch',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('LHipRoll',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('LHipPitch',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('LKneePitch',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('LAnklePitch',      [-20,   20 ], 20 ),
+    # PositionActuatorParams('LHipRoll',      [-5,   5 ], 20 ),
+    # PositionActuatorParams('LHipPitch',      [-20,   20 ], 80 ),
+    # PositionActuatorParams('LKneePitch',      [-10,   10 ], 20 ),
+    # PositionActuatorParams('LAnklePitch',     [-20,   20 ], 20),
     # PositionActuatorParams('LAnkleRoll',      [-20,   20 ], 20 ),
     # PositionActuatorParams('RHipYawPitch',      [-20,   20 ], 20 ),
     # PositionActuatorParams('RHipRoll',      [-20,   20 ], 20 ),
     # PositionActuatorParams('RHipPitch',      [-20,   20 ], 20 ),
     # PositionActuatorParams('RKneePitch',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('RAnklePitch',      [-20,   20 ], 20 ),
+    # PositionActuatorParams('RAnklePitch',     [-20,   20 ], 20 ),
     # PositionActuatorParams('RAnkleRoll',      [-20,   20 ], 20 ),
     # PositionActuatorParams('RShoulderPitch',      [-20,   20 ], 20 ),
     # PositionActuatorParams('RShoulderRoll',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('RElbowYaw',      [-20,   20 ], 20 ),
+    # PositionActuatorParams('RElbowYaw',      [-20,   20 ], 20),
     # PositionActuatorParams('RElbowRoll',      [-20,   20 ], 20 ),
     # PositionActuatorParams('RWristYaw',      [-20,   20 ], 20 ),
     # PositionActuatorParams('RHand',      [-20,   20 ], 20 ),
 
-    # # PositionActuatorParams('headrz',      [-20,   20 ], 20 ),
-    # PositionActuatorParams('lclaviclery', [-20,   20 ], 20 ),
-    # PositionActuatorParams('lclaviclerz', [-20,   20 ], 20 ),
-    # PositionActuatorParams('lfemurrx',    [-120,  120], 120),
-    # PositionActuatorParams('lfemurry',    [-80,   80 ], 80 ),
-    # PositionActuatorParams('lfemurrz',    [-80,   80 ], 80 ),
-    # PositionActuatorParams('lfingersrx',  [-20,   20 ], 20 ),
-    # PositionActuatorParams('lfootrx',     [-50,   50 ], 50 ),
-    # PositionActuatorParams('lfootrz',     [-50,   50 ], 50 ),
-    # PositionActuatorParams('lhandrx',     [-20,   20 ], 20 ),
-    # PositionActuatorParams('lhandrz',     [-20,   20 ], 20 ),
-    # PositionActuatorParams('lhumerusrx',  [-60,   60 ], 60 ),
-    # PositionActuatorParams('lhumerusry',  [-60,   60 ], 60 ),
-    # PositionActuatorParams('lhumerusrz',  [-60,   60 ], 60 ),
-    # PositionActuatorParams('lowerbackrx', [-120,  120], 150),
-    # PositionActuatorParams('lowerbackry', [-120,  120], 150),
-    # PositionActuatorParams('lowerbackrz', [-120,  120], 150),
-    # PositionActuatorParams('lowerneckrx', [-20,   20 ], 20 ),
-    # PositionActuatorParams('lowerneckry', [-20,   20 ], 20 ),
-    # PositionActuatorParams('lowerneckrz', [-20,   20 ], 20 ),
-    # PositionActuatorParams('lradiusrx',   [-60,   60 ], 60 ),
-    # PositionActuatorParams('lthumbrx',    [-20,   20 ], 20) ,
-    # PositionActuatorParams('lthumbrz',    [-20,   20 ], 20 ),
-    # PositionActuatorParams('ltibiarx',    [-80,   80 ], 80 ),
-    # PositionActuatorParams('ltoesrx',     [-20,   20 ], 20 ),
-    # PositionActuatorParams('lwristry',    [-20,   20 ], 20 ),
-    # PositionActuatorParams('rclaviclery', [-20,   20 ], 20 ),
-    # PositionActuatorParams('rclaviclerz', [-20,   20 ], 20 ),
-    # PositionActuatorParams('rfemurrx',    [-120,  120], 120),
-    # PositionActuatorParams('rfemurry',    [-80,   80 ], 80 ),
-    # PositionActuatorParams('rfemurrz',    [-80,   80 ], 80 ),
-    # PositionActuatorParams('rfingersrx',  [-20,   20 ], 20 ),
-    # PositionActuatorParams('rfootrx',     [-50,   50 ], 50 ),
-    # PositionActuatorParams('rfootrz',     [-50,   50 ], 50 ),
-    # PositionActuatorParams('rhandrx',     [-20,   20 ], 20 ),
-    # PositionActuatorParams('rhandrz',     [-20,   20 ], 20 ),
-    # PositionActuatorParams('rhumerusrx',  [-60,   60 ], 60 ),
-    # PositionActuatorParams('rhumerusry',  [-60,   60 ], 60 ),
-    # PositionActuatorParams('rhumerusrz',  [-60,   60 ], 60 ),
-    # PositionActuatorParams('rradiusrx',   [-60,   60 ], 60 ),
-    # PositionActuatorParams('rthumbrx',    [-20,   20 ], 20 ),
-    # PositionActuatorParams('rthumbrz',    [-20,   20 ], 20 ),
-    # PositionActuatorParams('rtibiarx',    [-80,   80 ], 80 ),
-    # PositionActuatorParams('rtoesrx',     [-20,   20 ], 20 ),
-    # PositionActuatorParams('rwristry',    [-20,   20 ], 20 ),
-    # PositionActuatorParams('thoraxrx',    [-80,   80 ], 100),
-    # PositionActuatorParams('thoraxry',    [-80,   80 ], 100),
-    # PositionActuatorParams('thoraxrz',    [-80,   80 ], 100),
-    # PositionActuatorParams('upperbackrx', [-80,   80 ], 80 ),
-    # PositionActuatorParams('upperbackry', [-80,   80 ], 80 ),
-    # PositionActuatorParams('upperbackrz', [-80,   80 ], 80 ),
-    # PositionActuatorParams('upperneckrx', [-20,   20 ], 20 ),
-    # PositionActuatorParams('upperneckry', [-20,   20 ], 20 ),
-    # PositionActuatorParams('upperneckrz', [-20,   20 ], 20 ),
 ]
 
-# # pylint: disable=bad-whitespace
-# PositionActuatorParams = collections.namedtuple(
-#     'PositionActuatorParams', ['name', 'forcerange', 'kp'])
-# _POSITION_ACTUATORS = [
-#     PositionActuatorParams('headrx',      [-20,   20 ], 20 ),
-#     PositionActuatorParams('headry',      [-20,   20 ], 20 ),
-#     PositionActuatorParams('headrz',      [-20,   20 ], 20 ),
-#     PositionActuatorParams('lclaviclery', [-20,   20 ], 20 ),
-#     PositionActuatorParams('lclaviclerz', [-20,   20 ], 20 ),
-#     PositionActuatorParams('lfemurrx',    [-120,  120], 120),
-#     PositionActuatorParams('lfemurry',    [-80,   80 ], 80 ),
-#     PositionActuatorParams('lfemurrz',    [-80,   80 ], 80 ),
-#     PositionActuatorParams('lfingersrx',  [-20,   20 ], 20 ),
-#     PositionActuatorParams('lfootrx',     [-50,   50 ], 50 ),
-#     PositionActuatorParams('lfootrz',     [-50,   50 ], 50 ),
-#     PositionActuatorParams('lhandrx',     [-20,   20 ], 20 ),
-#     PositionActuatorParams('lhandrz',     [-20,   20 ], 20 ),
-#     PositionActuatorParams('lhumerusrx',  [-60,   60 ], 60 ),
-#     PositionActuatorParams('lhumerusry',  [-60,   60 ], 60 ),
-#     PositionActuatorParams('lhumerusrz',  [-60,   60 ], 60 ),
-#     PositionActuatorParams('lowerbackrx', [-120,  120], 150),
-#     PositionActuatorParams('lowerbackry', [-120,  120], 150),
-#     PositionActuatorParams('lowerbackrz', [-120,  120], 150),
-#     PositionActuatorParams('lowerneckrx', [-20,   20 ], 20 ),
-#     PositionActuatorParams('lowerneckry', [-20,   20 ], 20 ),
-#     PositionActuatorParams('lowerneckrz', [-20,   20 ], 20 ),
-#     PositionActuatorParams('lradiusrx',   [-60,   60 ], 60 ),
-#     PositionActuatorParams('lthumbrx',    [-20,   20 ], 20) ,
-#     PositionActuatorParams('lthumbrz',    [-20,   20 ], 20 ),
-#     PositionActuatorParams('ltibiarx',    [-80,   80 ], 80 ),
-#     PositionActuatorParams('ltoesrx',     [-20,   20 ], 20 ),
-#     PositionActuatorParams('lwristry',    [-20,   20 ], 20 ),
-#     PositionActuatorParams('rclaviclery', [-20,   20 ], 20 ),
-#     PositionActuatorParams('rclaviclerz', [-20,   20 ], 20 ),
-#     PositionActuatorParams('rfemurrx',    [-120,  120], 120),
-#     PositionActuatorParams('rfemurry',    [-80,   80 ], 80 ),
-#     PositionActuatorParams('rfemurrz',    [-80,   80 ], 80 ),
-#     PositionActuatorParams('rfingersrx',  [-20,   20 ], 20 ),
-#     PositionActuatorParams('rfootrx',     [-50,   50 ], 50 ),
-#     PositionActuatorParams('rfootrz',     [-50,   50 ], 50 ),
-#     PositionActuatorParams('rhandrx',     [-20,   20 ], 20 ),
-#     PositionActuatorParams('rhandrz',     [-20,   20 ], 20 ),
-#     PositionActuatorParams('rhumerusrx',  [-60,   60 ], 60 ),
-#     PositionActuatorParams('rhumerusry',  [-60,   60 ], 60 ),
-#     PositionActuatorParams('rhumerusrz',  [-60,   60 ], 60 ),
-#     PositionActuatorParams('rradiusrx',   [-60,   60 ], 60 ),
-#     PositionActuatorParams('rthumbrx',    [-20,   20 ], 20 ),
-#     PositionActuatorParams('rthumbrz',    [-20,   20 ], 20 ),
-#     PositionActuatorParams('rtibiarx',    [-80,   80 ], 80 ),
-#     PositionActuatorParams('rtoesrx',     [-20,   20 ], 20 ),
-#     PositionActuatorParams('rwristry',    [-20,   20 ], 20 ),
-#     PositionActuatorParams('thoraxrx',    [-80,   80 ], 100),
-#     PositionActuatorParams('thoraxry',    [-80,   80 ], 100),
-#     PositionActuatorParams('thoraxrz',    [-80,   80 ], 100),
-#     PositionActuatorParams('upperbackrx', [-80,   80 ], 80 ),
-#     PositionActuatorParams('upperbackry', [-80,   80 ], 80 ),
-#     PositionActuatorParams('upperbackrz', [-80,   80 ], 80 ),
-#     PositionActuatorParams('upperneckrx', [-20,   20 ], 20 ),
-#     PositionActuatorParams('upperneckry', [-20,   20 ], 20 ),
-#     PositionActuatorParams('upperneckrz', [-20,   20 ], 20 ),
-# ]
 PositionActuatorParamsV2020 = collections.namedtuple(
     'PositionActuatorParams', ['name', 'forcerange', 'kp', 'damping'])
 _POSITION_ACTUATORS_V2020 = [
@@ -508,13 +368,13 @@ class NAOPositionControlled(NAOHumanoid):
       associated_joint = self._mjcf_root.find('joint', actuator_params.name)
       if hasattr(actuator_params, 'damping'):
         associated_joint.damping = actuator_params.damping
-      # pdb.set_trace()
       actuator = scaled_actuators.add_position_actuator(
           name=actuator_params.name,
           target=associated_joint,
           kp=actuator_params.kp,
           qposrange=associated_joint.range,
-          ctrlrange=(-1, 1),
+          # ctrlrange=(-1, 1),
+          ctrlrange=associated_joint.range,
           forcerange=actuator_params.forcerange)
       if self._version == '2020':
         actuator.dyntype = 'filter'
